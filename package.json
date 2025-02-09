@@ -9,12 +9,12 @@
     "schema": "mkdirp build && npx ts-schema src/schema.ts build && yarn analytics-schema",
     "analytics-schema": "npx tsc src/analytics-schema.ts --moduleResolution node --skipLibCheck --outFile /dev/stdout -m amd | node -e 'a={};eval(\"define=(_,d,c)=>{c(a,a,...d.slice(2).map(require));console.log(JSON.stringify(a.default))};\"+require(\"fs\").readFileSync(\"/dev/stdin\",\"utf8\"))' > build/analytics-schema.json",
     "prodbuild": "cross-env GENERATE_SOURCEMAP=false react-scripts build && ncp package.json build/",
-    "build": "rimraf build && yarn prodbuild && yarn schema && omg app build",
+    "build": "rimraf build && yarn prodbuild && yarn schema && phy app build",
     "eject": "react-scripts eject",
-    "pub": "omg app publish",
-    "settings": "omg app settings",
-    "upload-description": "omg app upload-description",
-    "connect": "omg dev ws"
+    "pub": "phy app publish",
+    "settings": "phy app settings",
+    "upload-description": "phy app upload-description",
+    "connect": "phy dev ws"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@ombori/ts-schema": "^2.231.1",
+    "@phygrid/cli": "^4.0.82",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
