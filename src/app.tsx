@@ -1,45 +1,61 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { getInstance as gs } from '@ombori/grid-signals-react';
+import React from 'react';
+import { connectPhyClient } from '@phygrid/hub-client';
 import styled from 'styled-components';
-import { useSettings } from '@ombori/ga-settings';
 import logo from './logo.svg';
 
-import { Schema as Settings } from './schema';
+import Settings from './schema';
 
 function App() {
-  const [productCount, setProductCount] = useState(0);
-  const settings = useSettings<Settings>();
+  const [client, setClient] = React.useState<any>(null);
+  const [settings, setSettings] = React.useState<Settings | null>(null);
+  const [gs, setGs] = React.useState<any>(null);
 
-  const productName = settings?.productName;
-  const productPrice = settings?.productPrice;
+  // Fetch & set the client, settings, and signals once.
+  React.useEffect(() => {
+    let isMounted = true;
 
-  useEffect(() => {
-    if (productName) {
-      gs().sendContentView({ title: productName });
-    }
-  }, [productName]);
+    const initializeClient = async () => {
+      try {
+        const newClient = await connectPhyClient();
+        console.log('client', newClient);
 
-  useEffect(() => {
-    const startSessionSubscription = async () => {
-      const sessionState = await gs().subscribeSessionState((sessionState) => {
-        setProductCount(sessionState.CART['TEMPORARY-PRODUCT-ID-123']);
-      });
-  
-      return () => {
-        sessionState.stop();
+        if (isMounted) {
+          setClient(newClient);
+          const newGs = (await newClient.getInstance()).getSignals();
+          setGs(newGs);
+
+          const newSettings = (await newClient.getSettings()) as Settings;
+          setSettings(newSettings);
+        }
+      } catch (err) {
+        console.error('Error initializing client:', err);
       }
-    }
+    };
 
-    startSessionSubscription();
+    initializeClient();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const onAddToCart = useCallback(() => {
-    gs().sendCartAdd({ productId: 'TEMPORARY-PRODUCT-ID-123', quantity: 1 })
-  }, []);
+  // Send content view once productName is available
+  React.useEffect(() => {
+    if (!gs || !settings?.productName) return;
+    gs.sendContentView({ title: settings.productName });
+  }, [gs, settings?.productName]);
+
+  // Example add to cart callback:
+  const onAddToCart = React.useCallback(() => {
+    if (!gs) return;
+    gs.sendCartAdd({ productId: 'TEMPORARY-PRODUCT-ID-123', quantity: 1 });
+  }, [gs]);
 
   if (!settings) {
-    return <Container>Loading gridapp settings...</Container>
+    return <Container>Loading gridapp settings...</Container>;
   }
+
+  const { productName, productPrice } = settings;
 
   return (
     <Container>
@@ -47,12 +63,8 @@ function App() {
         <Logo src={logo} alt="logo" />
         <p>Product name: {productName}</p>
         <p>Product price: {productPrice}</p>
-        <Button onClick={onAddToCart}>Add to Cart</Button>
+        <button onClick={onAddToCart}>Add to Cart</button>
       </ProductInfo>
-      <RealTimeInfo>
-        <p>Real Cart Subscription</p>
-        <p>{productName} count: {productCount}</p>
-      </RealTimeInfo>
     </Container>
   );
 }
@@ -82,23 +94,6 @@ const ProductInfo = styled.header`
 const Logo = styled.img`
   height: 40vmin;
   pointer-events: none;
-`;
-
-const Button = styled.button`
-  padding: 16px 32px;
-  margin-top: 24px;
-  align-self: center;
-  border-radius: 8px;
-`;
-
-const RealTimeInfo = styled.footer`
-  display: flex;
-  height: 100%;
-  flex: 1;
-  flex-direction: column;
-  pointer-events: none;
-  align-items: center;
-  justify-content: center;
 `;
 
 export default App;

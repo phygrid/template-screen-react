@@ -1,7 +1,7 @@
 /**
  * @title Example schema
  */
-export type Schema = {
+export type Settings = {
   /**
    * @title Product name
    * @default "My Example Product"
@@ -14,3 +14,5 @@ export type Schema = {
    */
   productPrice: string;
 }
+
+export default Settings;
