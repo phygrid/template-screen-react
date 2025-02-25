@@ -53,6 +53,7 @@ module.exports = function override(config, env) {
     https: require.resolve('https-browserify'),
     url: require.resolve('url/'),
     os: require.resolve('os-browserify/browser'),
+    wrtc: false,
     fs: false,
     net: false,
     tls: false,

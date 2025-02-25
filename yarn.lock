@@ -7825,6 +7825,11 @@ ignore-walk@^3.0.1:
   dependencies:
     minimatch "^3.0.4"
 
+ignore-webpack-plugin@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ignore-webpack-plugin/-/ignore-webpack-plugin-0.3.0.tgz#51a9fe1960d14d5da65cbacf21b3644905433b2c"
+  integrity sha512-hsqb9Gi3iLCJ4GpIc027a5jXCM2cBmwSCHiu/J9Heeyp63FVumltx96m3I4/qEXB4wvW1q9bfgOwo/khmlB4YQ==
+
 ignore@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.0.tgz#6d3bac8fa7fe0d45d9f9be7bac2fc279577e345a"
