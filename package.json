@@ -33,15 +33,15 @@
   },
   "dependencies": {
     "@ombori/grid-reports": "^3.37.4",
-    "@phygrid/hub-client": "^4.2.164",
+    "@phygrid/hub-client": "^4.2.400",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "styled-components": "^5.3.5",
     "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@phygrid/cli": "^4.2.164",
-    "@phygrid/ts-schema": "^4.2.164",
+    "@phygrid/cli": "^4.2.400",
+    "@phygrid/ts-schema": "^4.2.400",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
