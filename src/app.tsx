@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { connectPhyClient } from "@phygrid/hub-client";
-import styled from "styled-components";
-import logo from "./logo.svg";
+import React, { useCallback, useEffect, useState } from 'react';
+import { connectPhyClient } from '@phygrid/hub-client';
+import styled from 'styled-components';
+import logo from './logo.svg';
 
-import Settings from "./schema";
+import Settings from './schema';
 
 function App() {
   const [client, setClient] = useState<any>(null);
-  const [settings, setSettings] = useState<Settings | null>(null);
+  const [settings, setSettings] =useState<Settings | null>(null);
   const [gs, setGs] = useState<any>(null);
 
   // Fetch & set the client, settings, and signals once.
@@ -17,7 +17,7 @@ function App() {
     const initializeClient = async () => {
       try {
         const newClient = await connectPhyClient();
-        console.log("client", newClient);
+        console.log('client', newClient);
 
         if (isMounted) {
           setClient(newClient);
@@ -28,7 +28,7 @@ function App() {
           setSettings(newSettings);
         }
       } catch (err) {
-        console.error("Error initializing client:", err);
+        console.error('Error initializing client:', err);
       }
     };
 
@@ -48,7 +48,7 @@ function App() {
   // Example add to cart callback:
   const onAddToCart = useCallback(() => {
     if (!gs) return;
-    gs.sendCartAdd({ productId: "TEMPORARY-PRODUCT-ID-123", quantity: 1 });
+    gs.sendCartAdd({ productId: 'TEMPORARY-PRODUCT-ID-123', quantity: 1 });
   }, [gs]);
 
   if (!settings) {
