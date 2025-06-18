@@ -5,6 +5,7 @@
   "homepage": "./",
   "scripts": {
     "bootstrap": "mkdirp src/settings && ncp default.settings.json src/settings/index.json",
+    "start:dev": "cross-env REACT_APP_DEV_MODE=true react-app-rewired start",
     "start": "yarn schema && cross-env REACT_APP_MESSAGING_URL=ws://localhost:8088 react-app-rewired start",
     "schema": "mkdirp build && npx ts-schema src/schema.ts build && yarn analytics-schema",
     "analytics-schema": "npx tsc src/analytics-schema.ts --moduleResolution node --skipLibCheck --outFile /dev/stdout -m amd | node -e 'a={};eval(\"define=(_,d,c)=>{c(a,a,...d.slice(2).map(require));console.log(JSON.stringify(a.default))};\"+require(\"fs\").readFileSync(\"/dev/stdin\",\"utf8\"))' > build/analytics-schema.json",
