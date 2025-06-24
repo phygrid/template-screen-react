@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { connectPhyClient } from '@phygrid/hub-client';
 import styled from 'styled-components';
 import logo from './logo.svg';
@@ -6,12 +6,12 @@ import logo from './logo.svg';
 import Settings from './schema';
 
 function App() {
-  const [client, setClient] = React.useState<any>(null);
-  const [settings, setSettings] = React.useState<Settings | null>(null);
-  const [gs, setGs] = React.useState<any>(null);
+  const [client, setClient] = useState<any>(null);
+  const [settings, setSettings] =useState<Settings | null>(null);
+  const [gs, setGs] = useState<any>(null);
 
   // Fetch & set the client, settings, and signals once.
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
 
     const initializeClient = async () => {
@@ -21,7 +21,7 @@ function App() {
 
         if (isMounted) {
           setClient(newClient);
-          const newGs = (await newClient.getInstance()).getSignals();
+          const newGs = await newClient.initializeSignals();
           setGs(newGs);
 
           const newSettings = (await newClient.getSettings()) as Settings;
@@ -40,13 +40,13 @@ function App() {
   }, []);
 
   // Send content view once productName is available
-  React.useEffect(() => {
+  useEffect(() => {
     if (!gs || !settings?.productName) return;
-    gs.sendContentView({ title: settings.productName });
+    gs.sendCartView();
   }, [gs, settings?.productName]);
 
   // Example add to cart callback:
-  const onAddToCart = React.useCallback(() => {
+  const onAddToCart = useCallback(() => {
     if (!gs) return;
     gs.sendCartAdd({ productId: 'TEMPORARY-PRODUCT-ID-123', quantity: 1 });
   }, [gs]);
