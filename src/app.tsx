@@ -1,61 +1,68 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { connectPhyClient } from '@phygrid/hub-client';
 import styled from 'styled-components';
-import logo from './logo.svg';
-
+import { connectPhyClient, PhyHubClient } from '@phygrid/hub-client';
+import { getDevSettings, isDevMode } from './utils/dev-mode';
+import logo from './phygrid-logo.svg';
 import Settings from './schema';
 
+interface AppState {
+  client: PhyHubClient | null;
+  settings: Settings | null;
+  signals: PhyHubClient['signals'] | null;
+}
+
+const initialState: AppState = {
+  client: null,
+  settings: null,
+  signals: null,
+};
+
 function App() {
-  const [client, setClient] = useState<any>(null);
-  const [settings, setSettings] =useState<Settings | null>(null);
-  const [gs, setGs] = useState<any>(null);
+  const [state, setState] = useState<AppState>(initialState);
 
-  // Fetch & set the client, settings, and signals once.
-  useEffect(() => {
-    let isMounted = true;
-
-    const initializeClient = async () => {
-      try {
-        const newClient = await connectPhyClient();
-        console.log('client', newClient);
-
-        if (isMounted) {
-          setClient(newClient);
-          const newGs = await newClient.initializeSignals();
-          setGs(newGs);
-
-          const newSettings = (await newClient.getSettings()) as Settings;
-          setSettings(newSettings);
-        }
-      } catch (err) {
-        console.error('Error initializing client:', err);
-      }
-    };
-
-    initializeClient();
-
-    return () => {
-      isMounted = false;
-    };
+  const initializeDevMode = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      settings: getDevSettings()
+    }));
   }, []);
 
-  // Send content view once productName is available
+  const initializeClient = useCallback(async () => {
+    try {
+      const client = await connectPhyClient();
+      const signals = await client.initializeSignals();
+      const settings = await client.getSettings() as Settings;
+
+      setState({ client, settings, signals });
+    } catch (err) {
+      console.error('Error initializing client:', err);
+    }
+  }, []);
+
   useEffect(() => {
-    if (!gs || !settings?.productName) return;
-    gs.sendCartView();
-  }, [gs, settings?.productName]);
+    const initialize = async () => {
+      if (isDevMode()) {
+        initializeDevMode();
+        return;
+      }
 
-  // Example add to cart callback:
-  const onAddToCart = useCallback(() => {
-    if (!gs) return;
-    gs.sendCartAdd({ productId: 'TEMPORARY-PRODUCT-ID-123', quantity: 1 });
-  }, [gs]);
+      await initializeClient();
+    };
 
-  if (!settings) {
+    initialize();
+  }, [initializeDevMode, initializeClient]);
+
+  const handleAddToCart = useCallback(() => {
+    const { signals } = state;
+    if (!signals) return;
+    signals.sendCartAdd({ productId: 'TEMPORARY-PRODUCT-ID-123', quantity: 1 });
+  }, [state]);
+
+  if (!state.settings) {
     return <Container>Loading gridapp settings...</Container>;
   }
 
-  const { productName, productPrice } = settings;
+  const { productName, productPrice } = state.settings;
 
   return (
     <Container>
@@ -63,7 +70,7 @@ function App() {
         <Logo src={logo} alt="logo" />
         <p>Product name: {productName}</p>
         <p>Product price: {productPrice}</p>
-        <button onClick={onAddToCart}>Add to Cart</button>
+        <StyledButton onClick={handleAddToCart}>Add to Cart</StyledButton>
       </ProductInfo>
     </Container>
   );
@@ -71,7 +78,7 @@ function App() {
 
 const Container = styled.div`
   text-align: center;
-  background-color: #282c34;
+  background-color: #000000;
   height: 100%;
   position: absolute;
   display: flex;
@@ -88,12 +95,25 @@ const ProductInfo = styled.header`
   flex-direction: column;
   flex: 1;
   padding-bottom: 64px;
-  border-right: solid 1px white;
+  align-items: center;
+  justify-content: center
 `;
 
 const Logo = styled.img`
-  height: 40vmin;
+  height: 15vmin;
   pointer-events: none;
+`;
+
+const StyledButton = styled.button`
+  background: linear-gradient(135deg, #1dac4d 0%, #0f7a32 100%);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 24px 48px;
+  margin: 20px;
 `;
 
 export default App;
