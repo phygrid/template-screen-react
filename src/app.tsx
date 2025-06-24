@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { connectPhyClient, PhyHubClient } from '@phygrid/hub-client';
 import { getDevSettings, isDevMode } from './utils/dev-mode';
-import logo from './logo.svg';
+import logo from './phygrid-logo.svg';
 import Settings from './schema';
 
 interface AppState {
@@ -78,7 +78,7 @@ function App() {
 
 const Container = styled.div`
   text-align: center;
-  background-color: #282c34;
+  background-color: #000000;
   height: 100%;
   position: absolute;
   display: flex;
@@ -95,22 +95,24 @@ const ProductInfo = styled.header`
   flex-direction: column;
   flex: 1;
   padding-bottom: 64px;
+  align-items: center;
+  justify-content: center
 `;
 
 const Logo = styled.img`
-  height: 40vmin;
+  height: 15vmin;
   pointer-events: none;
 `;
 
 const StyledButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1dac4d 0%, #0f7a32 100%);
   border: none;
   border-radius: 25px;
   color: white;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  padding: 12px 30px;
+  padding: 24px 48px;
   margin: 20px;
 `;
 

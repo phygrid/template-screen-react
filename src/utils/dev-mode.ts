@@ -19,5 +19,5 @@ export const getDevSettings = (): Settings => {
 };
 
 export const isDevMode = (): boolean => {
-  return process.env.REACT_APP_DEV_MODE === 'true';
+  return process.env.NODE_ENV === 'development';
 }; 
